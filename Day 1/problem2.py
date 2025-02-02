@@ -1,5 +1,5 @@
 """Given two lists of numbers, find their similarity score defined as
-the value in the left list * the occurances of that value in the right list"""
+the value in the left list * the occurrences of that value in the right list"""
 
 left_list: list[int] = []
 right_list: list[int] = []

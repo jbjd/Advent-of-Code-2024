@@ -67,7 +67,7 @@ class Report:
         # This is structured weirdly for some optimization
         # A slower but more simple approach would be to check all variations of
         # self.levels with a single value missing, but only the index where the issue
-        # first occured the two before that need to be checked.
+        # first occurred the two before that need to be checked.
         # Technically, this is now O(n) rather than O(n^2)
         increasing_safely: bool
         decreasing_safely: bool
