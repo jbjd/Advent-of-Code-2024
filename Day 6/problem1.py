@@ -65,7 +65,7 @@ class Guard:
             case _:
                 raise Exception("Unreachable")
 
-    def _rotate_90_degrees(self) -> tuple[int, int]:
+    def _rotate_90_degrees(self) -> None:
         match self.direction:
             case Direction.UP:
                 self.direction = Direction.RIGHT
