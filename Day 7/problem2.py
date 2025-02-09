@@ -1,7 +1,7 @@
 """Given an input where each line is in the form "sum: _ _ _" where
 the underscores are numbers, check if each sum can be created by using any combination
-of adding or multiplying the numbers. Find all sums that are valid and sum them
-together to create a sum of sums"""
+of adding,combination, or multiplying the numbers. Find all sums that are valid and sum
+them together to create a sum of sums"""
 
 from enum import Enum
 
@@ -9,6 +9,7 @@ from enum import Enum
 class Operation(Enum):
     ADD = 0
     MULT = 1
+    COMB = 2
 
 
 sum_and_values: list[tuple[int, list[int]]] = []
@@ -29,13 +30,15 @@ def values_sum_correctly(
     target_sum: int,
     operation: Operation,
 ) -> bool:
-    """Recursively tries all variations of adding/multiplying
+    """Recursively tries all variations of adding/multiplying/combining
     values to get to target_sum"""
     if index >= len(values):
         return running_sum == target_sum
     else:
         if operation == Operation.ADD:
             running_sum += values[index]
+        elif operation == Operation.COMB:
+            running_sum = int(str(running_sum) + str(values[index]))
         else:
             running_sum *= values[index]
 
@@ -44,10 +47,14 @@ def values_sum_correctly(
     elif index + 1 >= len(values):
         return running_sum == target_sum
 
-    return values_sum_correctly(
-        values, index + 1, running_sum, target_sum, Operation.ADD
-    ) or values_sum_correctly(
-        values, index + 1, running_sum, target_sum, Operation.MULT
+    return (
+        values_sum_correctly(values, index + 1, running_sum, target_sum, Operation.ADD)
+        or values_sum_correctly(
+            values, index + 1, running_sum, target_sum, Operation.MULT
+        )
+        or values_sum_correctly(
+            values, index + 1, running_sum, target_sum, Operation.COMB
+        )
     )
 
 
@@ -56,5 +63,6 @@ for sum, values in sum_and_values:
     if values_sum_correctly(values, 0, 0, sum, Operation.ADD):
         running_sum += sum
 
-# Correct: 6231007345478
+
+# Correct: 333027885676693
 print(running_sum)
