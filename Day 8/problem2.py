@@ -1,8 +1,7 @@
 """Given a map where alphanumeric values represent antennas, find the number
 of unique locations that have antinodes placed. An antinodes can be placed on
 any spot where they are perfectly inline with antennas of the same frequency
-and are double the distance from one of those antennas including spots that
-already have antenna."""
+including spots that already have antenna and themselves."""
 
 EMPTY_SPOT_ICON: str = "."
 
@@ -22,6 +21,11 @@ with open("Day 8/input.txt", "r", encoding="utf-8") as fp:
 
         y_size += 1
         x_size = len(line)
+
+already_occupied_coords: set[tuple[int, int]] = set()
+for coords_iter in antenna_to_coords.values():
+    for coords in coords_iter:
+        already_occupied_coords.add(coords)
 
 
 def coords_in_bounds(coords: tuple[int, int]) -> bool:
@@ -46,16 +50,24 @@ for antenna, coords_iter in antenna_to_coords.items():
                 root_coords[1] - other_antenna_coords[1],
             )
 
-            possible_anti_coords1 = (root_coords[0] + x_diff, root_coords[1] + y_diff)
-            possible_anti_coords2 = (
-                other_antenna_coords[0] - x_diff,
-                other_antenna_coords[1] - y_diff,
-            )
-
-            for possible_coords in (possible_anti_coords1, possible_anti_coords2):
-                if coords_in_bounds(possible_coords):
+            for direction in (1, -1):
+                possible_coords = (
+                    root_coords[0] + x_diff * direction,
+                    root_coords[1] + y_diff * direction,
+                )
+                while coords_in_bounds(possible_coords):
                     antinode_coords.add(possible_coords)
+                    possible_coords = (
+                        possible_coords[0] + x_diff * direction,
+                        possible_coords[1] + y_diff * direction,
+                    )
+
+# Special case: add antenna's own coords if at least 2 are present
+for coords_iter in antenna_to_coords.values():
+    if len(coords_iter) > 1:
+        for coords in coords_iter:
+            antinode_coords.add(coords)
 
 
-# Correct: 351
+# Correct: 1259
 print(len(antinode_coords))
