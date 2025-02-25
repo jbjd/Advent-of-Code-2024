@@ -48,5 +48,5 @@ for y, row in enumerate(topographic_map):
             score: int = find_score_of_trailhead(x, y, 0)
             total_score += score
 
-# Correct:
+# Correct: 1541
 print(total_score)
