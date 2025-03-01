@@ -33,7 +33,7 @@ def visit_stone(stone: int) -> list[int]:
 import time
 
 a = time.perf_counter()
-new_stones = []
+total_stones = 0
 
 for stone in stones:
     local_stones = [stone]
@@ -44,8 +44,9 @@ for stone in stones:
 
         local_stones = new_local_stones
 
-    new_stones += local_stones
+    stone_count = len(local_stones)
+    total_stones += stone_count
 print(time.perf_counter() - a)
 
 # Correct:
-print(len(new_stones))
+print(total_stones)
