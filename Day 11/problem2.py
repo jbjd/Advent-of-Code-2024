@@ -3,9 +3,7 @@ apply the first applicable rule of a given set of rules to each stone. Only one 
 applied to a given stone at a time. The rules apply each time you blink, and you will
 blink 75 times. Perserve the order of the stones"""
 
-import functools
-
-BLINK_COUNT: int = 35
+BLINK_COUNT: int = 75
 stones: list[int]
 
 with open("Day 11/input.txt", "r", encoding="utf-8") as fp:
@@ -13,40 +11,43 @@ with open("Day 11/input.txt", "r", encoding="utf-8") as fp:
     while line := fp.readline().strip():
         stones = [int(num) for num in line.split(" ")]
 
+stone_count_cache: dict[tuple[int, int], int] = {}
 
-@functools.cache
-def visit_stone(stone: int) -> list[int]:
+
+def get_stone_count_after_blinks(stone: int, remaining_blinks: int) -> int:
+    cache_key: tuple[int, int] = (stone, remaining_blinks)
+    if cache_key in stone_count_cache:
+        return stone_count_cache[cache_key]
+
+    if remaining_blinks == 0:
+        return 1
+
+    remaining_blinks -= 1
+    total_stones: int = 0
+
     if stone == 0:
-        return [1]
+        total_stones = get_stone_count_after_blinks(1, remaining_blinks)
+    else:
+        stone_repr = str(stone)
+        digit_count: int = len(stone_repr)
 
-    stone_repr = str(stone)
-    digit_count = len(stone_repr)
-    if digit_count % 2 == 0:
-        return [
-            int(stone_repr[: digit_count // 2]),
-            int(stone_repr[digit_count // 2 :]),
-        ]
+        if digit_count % 2 == 0:
+            left_stone = int(stone_repr[: digit_count // 2])
+            right_stone = int(stone_repr[digit_count // 2 :])
+            total_stones = get_stone_count_after_blinks(
+                left_stone, remaining_blinks
+            ) + get_stone_count_after_blinks(right_stone, remaining_blinks)
+        else:
+            total_stones = get_stone_count_after_blinks(stone * 2024, remaining_blinks)
 
-    return [stone * 2024]
+    stone_count_cache[cache_key] = total_stones
+    return total_stones
 
 
-import time
-
-a = time.perf_counter()
 total_stones = 0
 
 for stone in stones:
-    local_stones = [stone]
-    for _ in range(BLINK_COUNT):
-        new_local_stones = []
-        for local_stone in local_stones:
-            new_local_stones += visit_stone(local_stone)
+    total_stones += get_stone_count_after_blinks(stone, BLINK_COUNT)
 
-        local_stones = new_local_stones
-
-    stone_count = len(local_stones)
-    total_stones += stone_count
-print(time.perf_counter() - a)
-
-# Correct:
+# Correct: 237994815702032
 print(total_stones)
